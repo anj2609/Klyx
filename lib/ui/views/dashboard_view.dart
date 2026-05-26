@@ -8,6 +8,7 @@ import 'package:klyx/ui/views/github_view.dart';
 import 'package:klyx/ui/views/leaderboard_view.dart';
 import 'package:klyx/ui/views/settings_view.dart';
 import 'package:klyx/ui/views/connect_stack_view.dart';
+import 'package:klyx/features/friends/friends_screen.dart';
 
 class DashboardView extends ConsumerStatefulWidget {
   const DashboardView({super.key});
@@ -54,7 +55,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
           const _DashboardHome(),
           const LeaderboardView(),
           const ConnectStackView(),
-          const LeaderboardView(),
+          const FriendsScreen(),
           const SettingsView(),
         ],
       ),
