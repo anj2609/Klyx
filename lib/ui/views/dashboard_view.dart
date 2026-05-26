@@ -3,12 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:klyx/core/theme/colors.dart';
 import 'package:klyx/viewmodels/dashboard_viewmodel.dart';
 import 'package:klyx/ui/widgets/klyx_card.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:klyx/ui/views/github_view.dart';
 import 'package:klyx/ui/views/leaderboard_view.dart';
 import 'package:klyx/ui/views/settings_view.dart';
 import 'package:klyx/ui/views/connect_stack_view.dart';
 import 'package:klyx/features/friends/friends_screen.dart';
+import 'package:klyx/features/widget_builder/widget_builder_screen.dart';
+import 'package:klyx/features/widget_builder/home_grid_view.dart';
 
 class DashboardView extends ConsumerStatefulWidget {
   const DashboardView({super.key});
@@ -80,9 +81,52 @@ class _DashboardHome extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 20),
-            Text(
-              'DASHBOARD',
-              style: Theme.of(context).textTheme.headlineMedium,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'DASHBOARD',
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const WidgetBuilderScreen(),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.06),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                          color: Colors.white.withOpacity(0.08)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.tune,
+                            color: Colors.white.withOpacity(0.5), size: 14),
+                        const SizedBox(width: 4),
+                        Text(
+                          'CUSTOMIZE',
+                          style: TextStyle(
+                            fontFamily: 'Clash Display',
+                            fontSize: 9,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white.withOpacity(0.5),
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 20),
             
@@ -187,40 +231,9 @@ class _DashboardHome extends ConsumerWidget {
             
             const SizedBox(height: 20),
             
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 2,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childAspectRatio: 1.1,
-              children: [
-                _StatCard(
-                  title: 'CONTRIBS',
-                  value: '${stats.githubContribs}',
-                  icon: FontAwesomeIcons.codeBranch,
-                  color: KlyxColors.accentGreen,
-                ),
-                _StatCard(
-                  title: 'SOLVED',
-                  value: '${stats.leetcodeSolved}',
-                  icon: FontAwesomeIcons.terminal,
-                  color: KlyxColors.accentYellow,
-                ),
-                _StatCard(
-                  title: 'RATING',
-                  value: '${stats.codeforcesRating}',
-                  icon: FontAwesomeIcons.trophy,
-                  color: KlyxColors.accentBlue,
-                ),
-                _StatCard(
-                  title: 'GH STREAK',
-                  value: '${stats.githubStreak}D',
-                  icon: FontAwesomeIcons.fire,
-                  color: Colors.deepPurpleAccent,
-                ),
-              ],
-            ),
+            // Configurable widget grid
+            const HomeGridView(),
+            
             const SizedBox(height: 40),
           ],
         ),
@@ -229,52 +242,6 @@ class _DashboardHome extends ConsumerWidget {
   }
 }
 
-class _StatCard extends StatelessWidget {
-  final String title;
-  final String value;
-  final dynamic icon;
-  final Color color;
-
-  const _StatCard({
-    required this.title,
-    required this.value,
-    required this.icon,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return KlyxCard(
-      color: color,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          FaIcon(icon, color: Colors.white, size: 20),
-          const Spacer(),
-          Text(
-            value,
-            style: const TextStyle(
-              fontFamily: 'Clash Display',
-              fontSize: 48,
-              height: 1,
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Text(
-            title,
-            style: TextStyle(
-              fontFamily: 'Clash Display',
-              fontSize: 10,
-              fontWeight: FontWeight.w900,
-              color: Colors.white.withOpacity(0.8),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class _KlyxBottomNav extends StatelessWidget {
   final int currentIndex;

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:klyx/core/theme/colors.dart';
 import 'package:klyx/features/auth/auth_provider.dart';
 import 'package:klyx/features/auth/login_screen.dart';
+import 'package:klyx/features/widget_builder/widget_builder_screen.dart';
 import 'package:klyx/ui/views/dashboard_view.dart';
 
 final _routerProvider = Provider<GoRouter>((ref) {
@@ -31,6 +32,12 @@ final _routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/',
         builder: (context, state) => const DashboardView(),
+        routes: [
+          GoRoute(
+            path: 'widget-builder',
+            builder: (context, state) => const WidgetBuilderScreen(),
+          ),
+        ],
       ),
     ],
   );
