@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:klyx/core/theme/colors.dart';
 import 'package:klyx/ui/widgets/klyx_card.dart';
 
@@ -64,7 +63,8 @@ class _SettingsViewState extends State<SettingsView> {
                         ),
                         child: Text(
                           'EDIT ACCOUNTS',
-                          style: GoogleFonts.inter(
+                          style: const TextStyle(
+                            fontFamily: 'Clash Display',
                             fontSize: 12,
                             fontWeight: FontWeight.w900,
                             color: KlyxColors.accentGreen,
@@ -85,7 +85,7 @@ class _SettingsViewState extends State<SettingsView> {
                   children: [
                     Text(
                       'HAPTIC FEEDBACK',
-                      style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 12),
+                      style: const TextStyle(fontFamily: 'Clash Display', fontWeight: FontWeight.w900, fontSize: 12),
                     ),
                     Switch(
                       value: _hapticFeedback,
@@ -107,7 +107,8 @@ class _SettingsViewState extends State<SettingsView> {
                       children: [
                         Text(
                           'CLEAR CACHE',
-                          style: GoogleFonts.inter(
+                          style: const TextStyle(
+                            fontFamily: 'Clash Display',
                             fontWeight: FontWeight.w900,
                             fontSize: 12,
                             color: KlyxColors.accentRed,
@@ -122,11 +123,12 @@ class _SettingsViewState extends State<SettingsView> {
                       children: [
                         Text(
                           'VERSION',
-                          style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 12),
+                          style: const TextStyle(fontFamily: 'Clash Display', fontWeight: FontWeight.w900, fontSize: 12),
                         ),
                         Text(
                           '1.0',
-                          style: GoogleFonts.inter(
+                          style: TextStyle(
+                            fontFamily: 'Clash Display',
                             fontWeight: FontWeight.w900,
                             fontSize: 12,
                             color: Colors.white.withOpacity(0.4),
@@ -154,7 +156,7 @@ class _SettingsViewState extends State<SettingsView> {
                     children: [
                       Text(
                         'LOG OUT',
-                        style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 16),
+                        style: const TextStyle(fontFamily: 'Clash Display', fontWeight: FontWeight.w900, fontSize: 16),
                       ),
                       const SizedBox(width: 8),
                       const Icon(Icons.logout),
@@ -178,7 +180,8 @@ class _SettingsLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: GoogleFonts.inter(
+      style: TextStyle(
+        fontFamily: 'Clash Display',
         fontSize: 10,
         fontWeight: FontWeight.bold,
         color: Colors.white.withOpacity(0.4),
@@ -210,12 +213,13 @@ class _AccountRow extends StatelessWidget {
           const SizedBox(width: 12),
           Text(
             name,
-            style: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 12),
+            style: const TextStyle(fontFamily: 'Clash Display', fontWeight: FontWeight.bold, fontSize: 12),
           ),
           const Spacer(),
           Text(
             username,
-            style: GoogleFonts.inter(
+            style: TextStyle(
+              fontFamily: 'Clash Display',
               fontWeight: FontWeight.w900,
               fontSize: 12,
               color: Colors.white.withOpacity(0.6),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:klyx/core/theme/colors.dart';
 import 'package:klyx/viewmodels/dashboard_viewmodel.dart';
 import 'package:klyx/ui/widgets/klyx_card.dart';
@@ -103,8 +102,9 @@ class _DashboardHome extends ConsumerWidget {
                     children: [
                       Text(
                         'COMPETITIVE SOLVED',
-                        style: GoogleFonts.inter(
-                          color: Colors.white.withOpacity(0.8),
+                        style: const TextStyle(
+                          fontFamily: 'Clash Display',
+                          color: Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),
@@ -113,17 +113,25 @@ class _DashboardHome extends ConsumerWidget {
                     ],
                   ),
                   const Spacer(),
-                  Text(
-                    '${stats.totalCompetitiveSolved}',
-                    style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                      fontSize: 100,
-                      height: 0.9,
-                    ),
+                  TweenAnimationBuilder<int>(
+                    tween: IntTween(begin: 0, end: stats.totalCompetitiveSolved),
+                    duration: const Duration(milliseconds: 1500),
+                    curve: Curves.easeOutCubic,
+                    builder: (context, value, child) {
+                      return Text(
+                        '$value',
+                        style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                          fontSize: 100,
+                          height: 0.9,
+                        ),
+                      );
+                    },
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'GLOBAL',
-                    style: GoogleFonts.inter(
+                    style: const TextStyle(
+                      fontFamily: 'Clash Display',
                       color: Colors.white,
                       fontWeight: FontWeight.w900,
                       fontSize: 18,
@@ -135,7 +143,8 @@ class _DashboardHome extends ConsumerWidget {
                     children: [
                       Text(
                         'LATEST: IN 0 SEC',
-                        style: GoogleFonts.inter(
+                        style: TextStyle(
+                          fontFamily: 'Clash Display',
                           color: Colors.white.withOpacity(0.6),
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
@@ -154,7 +163,8 @@ class _DashboardHome extends ConsumerWidget {
               children: [
                 Text(
                   'LEETCODE WEEKLY',
-                  style: GoogleFonts.inter(
+                  style: TextStyle(
+                    fontFamily: 'Clash Display',
                     color: Colors.white.withOpacity(0.6),
                     fontWeight: FontWeight.bold,
                     fontSize: 12,
@@ -162,7 +172,8 @@ class _DashboardHome extends ConsumerWidget {
                 ),
                 Text(
                   '6/7 DAYS',
-                  style: GoogleFonts.inter(
+                  style: const TextStyle(
+                    fontFamily: 'Clash Display',
                     color: KlyxColors.accentYellow,
                     fontWeight: FontWeight.w900,
                     fontSize: 12,
@@ -171,37 +182,7 @@ class _DashboardHome extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: List.generate(7, (index) {
-                final days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-                final isActive = stats.leetcodeWeekly[index];
-                return Column(
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: isActive ? KlyxColors.accentYellow : KlyxColors.cardBackground,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.05),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      days[index],
-                      style: GoogleFonts.inter(
-                        color: Colors.white.withOpacity(0.4),
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                );
-              }),
-            ),
+            _SequentialBoxes(activeDays: stats.leetcodeWeekly),
             
             const SizedBox(height: 20),
             
@@ -271,15 +252,18 @@ class _StatCard extends StatelessWidget {
           const Spacer(),
           Text(
             value,
-            style: GoogleFonts.bebasNeue(
+            style: const TextStyle(
+              fontFamily: 'Clash Display',
               fontSize: 48,
               height: 1,
               color: Colors.white,
+              fontWeight: FontWeight.bold,
             ),
           ),
           Text(
             title,
-            style: GoogleFonts.inter(
+            style: TextStyle(
+              fontFamily: 'Clash Display',
               fontSize: 10,
               fontWeight: FontWeight.w900,
               color: Colors.white.withOpacity(0.8),
@@ -343,6 +327,78 @@ class _NavIcon extends StatelessWidget {
           color: isActive ? Colors.white : Colors.white.withOpacity(0.4),
         ),
       ),
+    );
+  }
+}
+
+class _SequentialBoxes extends StatefulWidget {
+  final List<bool> activeDays;
+  const _SequentialBoxes({required this.activeDays});
+
+  @override
+  State<_SequentialBoxes> createState() => _SequentialBoxesState();
+}
+
+class _SequentialBoxesState extends State<_SequentialBoxes> {
+  int _visibleCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _animateBoxes();
+  }
+  
+  @override
+  void didUpdateWidget(covariant _SequentialBoxes oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.activeDays != widget.activeDays) {
+      _visibleCount = 0;
+      _animateBoxes();
+    }
+  }
+
+  void _animateBoxes() async {
+    for (int i = 0; i < 7; i++) {
+      await Future.delayed(const Duration(milliseconds: 100));
+      if (mounted) setState(() => _visibleCount = i + 1);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: List.generate(7, (index) {
+        final isActive = widget.activeDays[index];
+        final isVisible = index < _visibleCount;
+        return Column(
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              width: 40,
+              height: 48,
+              decoration: BoxDecoration(
+                color: isVisible && isActive ? KlyxColors.accentYellow : KlyxColors.cardBackground,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.05),
+                ),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              days[index],
+              style: TextStyle(
+                fontFamily: 'Clash Display',
+                color: Colors.white.withOpacity(0.4),
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        );
+      }),
     );
   }
 }

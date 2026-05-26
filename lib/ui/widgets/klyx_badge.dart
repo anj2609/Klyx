@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class KlyxBadge extends StatelessWidget {
   final String label;
@@ -23,7 +22,8 @@ class KlyxBadge extends StatelessWidget {
       ),
       child: Text(
         label.toUpperCase(),
-        style: GoogleFonts.inter(
+        style: TextStyle(
+          fontFamily: 'Clash Display',
           fontSize: 10,
           fontWeight: FontWeight.w900,
           color: textColor ?? Colors.white,

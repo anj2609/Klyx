@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:klyx/core/theme/colors.dart';
 import 'package:klyx/ui/views/dashboard_view.dart';
 
@@ -28,16 +27,18 @@ class KlyxApp extends StatelessWidget {
           surface: KlyxColors.cardBackground,
           background: KlyxColors.background,
         ),
-        textTheme: GoogleFonts.interTextTheme(
-          ThemeData.dark().textTheme,
-        ).copyWith(
-          displayLarge: GoogleFonts.bebasNeue(
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(fontFamily: 'Clash Display'),
+          bodyMedium: TextStyle(fontFamily: 'Clash Display'),
+          displayLarge: TextStyle(
+            fontFamily: 'Clash Display',
             fontSize: 48,
             fontWeight: FontWeight.bold,
             letterSpacing: 2.0,
             color: Colors.white,
           ),
-          headlineMedium: GoogleFonts.bebasNeue(
+          headlineMedium: TextStyle(
+            fontFamily: 'Clash Display',
             fontSize: 32,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.5,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:klyx/core/theme/colors.dart';
 import 'package:klyx/ui/widgets/klyx_card.dart';
 
@@ -68,7 +67,8 @@ class _ConnectStackViewState extends ConsumerState<ConnectStackView> {
                     const SizedBox(height: 8),
                     Text(
                       'Required for contribution data. Create at GitHub → Settings → Developer Settings → Tokens.',
-                      style: GoogleFonts.inter(
+                      style: TextStyle(
+                        fontFamily: 'Clash Display',
                         fontSize: 10,
                         color: Colors.white.withOpacity(0.4),
                       ),
@@ -104,7 +104,8 @@ class _ConnectStackViewState extends ConsumerState<ConnectStackView> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    textStyle: GoogleFonts.inter(
+                    textStyle: const TextStyle(
+                      fontFamily: 'Clash Display',
                       fontWeight: FontWeight.w900,
                       fontSize: 16,
                       letterSpacing: 1,
@@ -134,7 +135,8 @@ class _InputSection extends StatelessWidget {
       children: [
         Text(
           title,
-          style: GoogleFonts.inter(
+          style: TextStyle(
+            fontFamily: 'Clash Display',
             fontWeight: FontWeight.w900,
             fontSize: 12,
             color: Colors.white.withOpacity(0.6),
@@ -167,10 +169,11 @@ class _KlyxTextField extends StatelessWidget {
       child: TextField(
         controller: controller,
         obscureText: isPassword,
-        style: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 14),
+        style: const TextStyle(fontFamily: 'Clash Display', fontWeight: FontWeight.bold, fontSize: 14),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: GoogleFonts.inter(
+          hintStyle: TextStyle(
+            fontFamily: 'Clash Display',
             color: Colors.white.withOpacity(0.2),
             fontWeight: FontWeight.bold,
           ),

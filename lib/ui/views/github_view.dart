@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:klyx/core/theme/colors.dart';
 import 'package:klyx/viewmodels/github_viewmodel.dart';
 import 'package:klyx/ui/widgets/klyx_card.dart';
@@ -54,15 +53,18 @@ class GithubView extends ConsumerWidget {
                       children: [
                         Text(
                           stats.username,
-                          style: GoogleFonts.bebasNeue(
+                          style: const TextStyle(
+                            fontFamily: 'Clash Display',
                             fontSize: 32,
                             color: Colors.black,
+                            fontWeight: FontWeight.bold,
                             height: 1,
                           ),
                         ),
                         Text(
                           stats.bio,
-                          style: GoogleFonts.inter(
+                          style: TextStyle(
+                            fontFamily: 'Clash Display',
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
                             color: Colors.black.withOpacity(0.6),
@@ -128,7 +130,8 @@ class GithubView extends ConsumerWidget {
               children: [
                 Text(
                   'CONTRIBUTIONS',
-                  style: GoogleFonts.inter(
+                  style: const TextStyle(
+                    fontFamily: 'Clash Display',
                     color: KlyxColors.accentGreen,
                     fontWeight: FontWeight.w900,
                     fontSize: 14,
@@ -145,7 +148,8 @@ class GithubView extends ConsumerWidget {
                   const SizedBox(height: 12),
                   Text(
                     '${stats.totalContribs} CONTRIBUTIONS',
-                    style: GoogleFonts.inter(
+                    style: TextStyle(
+                      fontFamily: 'Clash Display',
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: Colors.white.withOpacity(0.4),
@@ -159,7 +163,8 @@ class GithubView extends ConsumerWidget {
             
             Text(
               'TOP REPOSITORIES',
-              style: GoogleFonts.inter(
+              style: TextStyle(
+                fontFamily: 'Clash Display',
                 color: Colors.white.withOpacity(0.6),
                 fontWeight: FontWeight.w900,
                 fontSize: 14,
@@ -189,7 +194,8 @@ class _ProfileStat extends StatelessWidget {
         const SizedBox(width: 4),
         Text(
           value,
-          style: GoogleFonts.inter(
+          style: TextStyle(
+            fontFamily: 'Clash Display',
             fontSize: 12,
             fontWeight: FontWeight.w900,
             color: Colors.black.withOpacity(0.8),
@@ -226,11 +232,18 @@ class _MiniStatCard extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             value,
-            style: GoogleFonts.bebasNeue(fontSize: 32, color: Colors.white, height: 1),
+            style: const TextStyle(
+              fontFamily: 'Clash Display',
+              fontSize: 32,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              height: 1,
+            ),
           ),
           Text(
             title,
-            style: GoogleFonts.inter(
+            style: TextStyle(
+              fontFamily: 'Clash Display',
               fontSize: 8,
               fontWeight: FontWeight.w900,
               color: Colors.white.withOpacity(0.4),
@@ -268,13 +281,17 @@ class _RepoCard extends StatelessWidget {
               const SizedBox(width: 12),
               Text(
                 name,
-                style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 14),
+                style: const TextStyle(
+                  fontFamily: 'Clash Display',
+                  fontWeight: FontWeight.w900,
+                  fontSize: 14,
+                ),
               ),
             ],
           ),
           Row(
             children: [
-              Text('$stars', style: GoogleFonts.inter(fontSize: 12, color: Colors.white.withOpacity(0.6))),
+              Text('$stars', style: TextStyle(fontFamily: 'Clash Display', fontSize: 12, color: Colors.white.withOpacity(0.6))),
               const SizedBox(width: 4),
               const Icon(Icons.star, size: 14, color: Colors.amber),
             ],

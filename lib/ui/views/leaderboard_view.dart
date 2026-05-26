@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:klyx/core/theme/colors.dart';
 import 'package:klyx/ui/widgets/klyx_card.dart';
 
@@ -23,7 +22,8 @@ class LeaderboardView extends StatelessWidget {
                     children: [
                       Text(
                         'LIVE',
-                        style: GoogleFonts.inter(
+                        style: const TextStyle(
+                          fontFamily: 'Clash Display',
                           fontSize: 10,
                           fontWeight: FontWeight.w900,
                           color: KlyxColors.accentBlue,
@@ -101,8 +101,10 @@ class _LeaderboardItem extends StatelessWidget {
         children: [
           Text(
             '#$rank',
-            style: GoogleFonts.bebasNeue(
+            style: TextStyle(
+              fontFamily: 'Clash Display',
               fontSize: 32,
+              fontWeight: FontWeight.bold,
               color: opacity == 1.0 ? Colors.black : Colors.white.withOpacity(0.4),
             ),
           ),
@@ -112,14 +114,17 @@ class _LeaderboardItem extends StatelessWidget {
             children: [
               Text(
                 name,
-                style: GoogleFonts.bebasNeue(
+                style: TextStyle(
+                  fontFamily: 'Clash Display',
                   fontSize: 24,
+                  fontWeight: FontWeight.bold,
                   color: opacity == 1.0 ? Colors.black : Colors.white.withOpacity(0.6),
                 ),
               ),
               Text(
                 'SOLVED',
-                style: GoogleFonts.inter(
+                style: TextStyle(
+                  fontFamily: 'Clash Display',
                   fontSize: 8,
                   fontWeight: FontWeight.w900,
                   color: opacity == 1.0 ? Colors.black.withOpacity(0.4) : KlyxColors.accentGreen,
@@ -130,8 +135,10 @@ class _LeaderboardItem extends StatelessWidget {
           const Spacer(),
           Text(
             '$solved',
-            style: GoogleFonts.bebasNeue(
+            style: TextStyle(
+              fontFamily: 'Clash Display',
               fontSize: 48,
+              fontWeight: FontWeight.bold,
               color: opacity == 1.0 ? Colors.black : Colors.white,
             ),
           ),
