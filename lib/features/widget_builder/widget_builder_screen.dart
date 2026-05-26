@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:klyx/core/theme/colors.dart';
 import 'package:klyx/features/widget_builder/widget_builder_provider.dart';
 import 'package:klyx/features/widget_builder/widget_config_model.dart';
@@ -73,70 +72,50 @@ class _WidgetBuilderScreenState extends ConsumerState<WidgetBuilderScreen> {
           // Top: Live preview grid
           Expanded(
             flex: 3,
-            child: DragTarget<WidgetType>(
-              onAcceptWithDetails: (details) {
-                final type = details.data;
-                final config = WidgetConfig(
-                  id: DateTime.now().millisecondsSinceEpoch.toString(),
-                  type: type,
-                  size: WidgetSize.medium,
-                  colorAccent: _colorForType(type),
-                  showLabel: true,
-                );
-                ref.read(widgetBuilderProvider.notifier).addWidget(config);
-              },
-              builder: (context, candidateData, rejectedData) {
-                return Container(
-                  margin: const EdgeInsets.all(16),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: candidateData.isNotEmpty
-                        ? Colors.white.withOpacity(0.03)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: candidateData.isNotEmpty
-                          ? KlyxColors.accentGreen.withOpacity(0.3)
-                          : Colors.white.withOpacity(0.05),
-                      width: candidateData.isNotEmpty ? 2 : 1,
-                    ),
-                  ),
-                  child: widgets.isEmpty
-                      ? Center(
-                          child: Text(
-                            'Drag widgets here',
+            child: Container(
+              margin: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.05),
+                  width: 1,
+                ),
+              ),
+              child: widgets.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.widgets_outlined,
+                              size: 40,
+                              color: Colors.white.withOpacity(0.1)),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Tap a widget below to add it',
                             style: TextStyle(
                               fontFamily: 'Clash Display',
                               color: Colors.white.withOpacity(0.2),
-                              fontSize: 14,
+                              fontSize: 13,
                             ),
                           ),
-                        )
-                      : SingleChildScrollView(
-                          child: StaggeredGrid.count(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: 10,
-                            crossAxisSpacing: 10,
-                            children: widgets.map((config) {
-                              return StaggeredGridTile.count(
-                                crossAxisCellCount:
-                                    config.size.crossAxisCellCount,
-                                mainAxisCellCount:
-                                    config.size.mainAxisCellCount,
-                                child: GestureDetector(
-                                  onTap: () =>
-                                      _showConfigPanel(context, config),
-                                  onLongPress: () =>
-                                      _showDeleteConfirm(context, config),
-                                  child: WidgetRenderer(
-                                      config: config, stats: stats),
-                                ),
-                              );
-                            }).toList(),
+                        ],
+                      ),
+                    )
+                  : LayoutBuilder(
+                      builder: (context, constraints) {
+                        final maxW = constraints.maxWidth;
+                        final spacing = 8.0;
+                        final halfW = (maxW - spacing) / 2;
+                        final cellH = halfW * 0.75;
+
+                        return SingleChildScrollView(
+                          child: _buildPreviewGrid(
+                            widgets, stats, maxW, halfW, cellH, spacing,
                           ),
-                        ),
-                );
-              },
+                        );
+                      },
+                    ),
             ),
           ),
 
@@ -151,7 +130,7 @@ class _WidgetBuilderScreenState extends ConsumerState<WidgetBuilderScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: Text(
-                    'AVAILABLE WIDGETS',
+                    'TAP TO ADD',
                     style: TextStyle(
                       fontFamily: 'Clash Display',
                       fontSize: 10,
@@ -168,55 +147,29 @@ class _WidgetBuilderScreenState extends ConsumerState<WidgetBuilderScreen> {
             ),
           ),
 
-          // Bottom: Palette of available widgets
+          // Bottom: Palette of available widgets — tap to add
           SizedBox(
-            height: 120,
+            height: 110,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               itemCount: WidgetType.values.length,
               itemBuilder: (context, index) {
                 final type = WidgetType.values[index];
                 return Padding(
                   padding: const EdgeInsets.only(right: 10),
-                  child: LongPressDraggable<WidgetType>(
-                    data: type,
-                    feedback: Material(
-                      color: Colors.transparent,
-                      child: Container(
-                        width: 90,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          color: Color(_colorForType(type)).withOpacity(0.8),
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color(_colorForType(type))
-                                  .withOpacity(0.3),
-                              blurRadius: 12,
-                              spreadRadius: 2,
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Text(
-                            type.shortLabel,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontFamily: 'Clash Display',
-                              fontSize: 10,
-                              fontWeight: FontWeight.w900,
-                              color: Colors.white,
-                              decoration: TextDecoration.none,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    childWhenDragging: Opacity(
-                      opacity: 0.3,
-                      child: _PaletteTile(type: type),
-                    ),
+                  child: GestureDetector(
+                    onTap: () {
+                      final config = WidgetConfig(
+                        id: DateTime.now().millisecondsSinceEpoch.toString(),
+                        type: type,
+                        size: WidgetSize.medium,
+                        colorAccent: _colorForType(type),
+                        showLabel: true,
+                      );
+                      ref.read(widgetBuilderProvider.notifier).addWidget(config);
+                    },
                     child: _PaletteTile(type: type),
                   ),
                 );
@@ -226,7 +179,7 @@ class _WidgetBuilderScreenState extends ConsumerState<WidgetBuilderScreen> {
 
           // Save button
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
             child: SizedBox(
               width: double.infinity,
               height: 50,
@@ -271,6 +224,77 @@ class _WidgetBuilderScreenState extends ConsumerState<WidgetBuilderScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildPreviewGrid(
+    List<WidgetConfig> widgets,
+    dynamic stats,
+    double maxW,
+    double halfW,
+    double cellH,
+    double spacing,
+  ) {
+    final List<Widget> rows = [];
+    int i = 0;
+    while (i < widgets.length) {
+      final config = widgets[i];
+      final isWide = config.size.crossAxisCellCount == 2;
+      final isTall = config.size.mainAxisCellCount == 2;
+
+      if (isWide) {
+        rows.add(
+          SizedBox(
+            width: maxW,
+            height: isTall ? cellH * 2 + spacing : cellH,
+            child: _previewTile(config, stats),
+          ),
+        );
+        i++;
+      } else {
+        Widget? second;
+        if (i + 1 < widgets.length &&
+            widgets[i + 1].size.crossAxisCellCount == 1) {
+          second = SizedBox(
+            width: halfW,
+            height: cellH,
+            child: _previewTile(widgets[i + 1], stats),
+          );
+        }
+
+        rows.add(
+          Row(
+            children: [
+              SizedBox(
+                width: halfW,
+                height: cellH,
+                child: _previewTile(config, stats),
+              ),
+              SizedBox(width: spacing),
+              if (second != null) second,
+              if (second == null) SizedBox(width: halfW),
+            ],
+          ),
+        );
+        i += second != null ? 2 : 1;
+      }
+
+      if (i < widgets.length) {
+        rows.add(SizedBox(height: spacing));
+      }
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: rows,
+    );
+  }
+
+  Widget _previewTile(WidgetConfig config, dynamic stats) {
+    return GestureDetector(
+      onTap: () => _showConfigPanel(context, config),
+      onLongPress: () => _showDeleteConfirm(context, config),
+      child: WidgetRenderer(config: config, stats: stats),
     );
   }
 
@@ -358,24 +382,32 @@ class _PaletteTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = _paletteColor(type);
     return Container(
-      width: 90,
+      width: 85,
       decoration: BoxDecoration(
         color: color.withOpacity(0.12),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.2)),
+        border: Border.all(color: color.withOpacity(0.25)),
       ),
       padding: const EdgeInsets.all(10),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.widgets_outlined, color: color, size: 20),
+          Container(
+            width: 28,
+            height: 28,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(Icons.add, color: color, size: 16),
+          ),
           const SizedBox(height: 6),
           Text(
             type.shortLabel,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: 'Clash Display',
-              fontSize: 9,
+              fontSize: 8,
               fontWeight: FontWeight.w900,
               color: color,
             ),
@@ -416,11 +448,11 @@ class _ConfigPanelState extends ConsumerState<_ConfigPanel> {
   late bool _showLabel;
 
   static const _colorSwatches = [
-    0xFFEB4335, // Red
-    0xFF4BD37B, // Green
-    0xFFF7CE46, // Yellow
-    0xFF3B3BFF, // Blue
-    0xFF9C27B0, // Purple
+    0xFFEB4335,
+    0xFF4BD37B,
+    0xFFF7CE46,
+    0xFF3B3BFF,
+    0xFF9C27B0,
   ];
 
   @override

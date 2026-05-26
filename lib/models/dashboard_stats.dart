@@ -25,4 +25,15 @@ class DashboardStats {
       leetcodeWeekly: [true, true, true, true, true, true, false],
     );
   }
+
+  factory DashboardStats.empty() {
+    return DashboardStats(
+      totalCompetitiveSolved: 0,
+      githubContribs: 0,
+      leetcodeSolved: 0,
+      codeforcesRating: 0,
+      githubStreak: 0,
+      leetcodeWeekly: [false, false, false, false, false, false, false],
+    );
+  }
 }

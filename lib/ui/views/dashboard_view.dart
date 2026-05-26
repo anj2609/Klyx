@@ -216,7 +216,7 @@ class _DashboardHome extends ConsumerWidget {
                   ),
                 ),
                 Text(
-                  '6/7 DAYS',
+                  '${stats.leetcodeWeekly.where((d) => d).length}/7 DAYS',
                   style: const TextStyle(
                     fontFamily: 'Clash Display',
                     color: KlyxColors.accentYellow,
@@ -252,8 +252,8 @@ class _KlyxBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 80,
-      margin: const EdgeInsets.all(20),
+      height: 64,
+      margin: const EdgeInsets.only(left: 8, right: 8, bottom: 6),
       decoration: BoxDecoration(
         color: const Color(0xFF1A1A1A).withOpacity(0.8),
         borderRadius: BorderRadius.circular(30),
