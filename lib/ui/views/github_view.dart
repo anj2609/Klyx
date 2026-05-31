@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:klyx/core/theme/colors.dart';
 import 'package:klyx/viewmodels/github_viewmodel.dart';
+import 'package:klyx/models/github_stats.dart';
 import 'package:klyx/ui/widgets/klyx_card.dart';
 import 'package:klyx/ui/widgets/contribution_grid.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -11,18 +12,56 @@ class GithubView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final stats = ref.watch(githubViewModelProvider);
+    final statsAsync = ref.watch(githubViewModelProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+      body: SafeArea(
+        child: statsAsync.when(
+        loading: () => const Center(
+          child: CircularProgressIndicator(color: Colors.white),
         ),
+        error: (err, _) => Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.error_outline, color: KlyxColors.accentRed, size: 48),
+              const SizedBox(height: 12),
+              Text(
+                'Failed to load GitHub stats',
+                style: TextStyle(
+                  fontFamily: 'Clash Display',
+                  color: Colors.white.withValues(alpha: 0.6),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => ref.read(githubViewModelProvider.notifier).refresh(),
+                style: ElevatedButton.styleFrom(backgroundColor: KlyxColors.accentGreen),
+                child: const Text('RETRY', style: TextStyle(fontFamily: 'Clash Display', fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+        ),
+        data: (stats) => _GithubContent(stats: stats),
       ),
-      body: SingleChildScrollView(
+      ),
+    );
+  }
+}
+
+class _GithubContent extends ConsumerWidget {
+  final GitHubStats stats;
+  const _GithubContent({required this.stats});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return RefreshIndicator(
+      onRefresh: () => ref.read(githubViewModelProvider.notifier).refresh(),
+      color: KlyxColors.accentGreen,
+      backgroundColor: KlyxColors.cardBackground,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -41,10 +80,15 @@ class GithubView extends ConsumerWidget {
                   CircleAvatar(
                     radius: 35,
                     backgroundColor: Colors.black12,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: FaIcon(FontAwesomeIcons.spider, color: KlyxColors.accentRed, size: 30),
-                    ),
+                    backgroundImage: stats.avatarUrl.isNotEmpty
+                        ? NetworkImage(stats.avatarUrl)
+                        : null,
+                    child: stats.avatarUrl.isEmpty
+                        ? Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: FaIcon(FontAwesomeIcons.github, color: Colors.black, size: 30),
+                          )
+                        : null,
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -52,7 +96,7 @@ class GithubView extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          stats.username,
+                          stats.username.toUpperCase(),
                           style: const TextStyle(
                             fontFamily: 'Clash Display',
                             fontSize: 32,
@@ -60,16 +104,21 @@ class GithubView extends ConsumerWidget {
                             fontWeight: FontWeight.bold,
                             height: 1,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        Text(
-                          stats.bio,
-                          style: TextStyle(
-                            fontFamily: 'Clash Display',
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black.withOpacity(0.6),
+                        if (stats.bio.isNotEmpty)
+                          Text(
+                            stats.bio.toUpperCase(),
+                            style: TextStyle(
+                              fontFamily: 'Clash Display',
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black.withValues(alpha: 0.6),
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
                         const SizedBox(height: 8),
                         Row(
                           children: [
@@ -94,7 +143,7 @@ class GithubView extends ConsumerWidget {
                   child: _MiniStatCard(
                     title: 'CURRENT\nDAYS',
                     value: '${stats.currentStreak}',
-                    icon: Icons.fireplace,
+                    icon: Icons.whatshot,
                     color: KlyxColors.cardBackground,
                     accentColor: KlyxColors.accentRed,
                   ),
@@ -152,7 +201,7 @@ class GithubView extends ConsumerWidget {
                       fontFamily: 'Clash Display',
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white.withOpacity(0.4),
+                      color: Colors.white.withValues(alpha: 0.4),
                     ),
                   ),
                 ],
@@ -161,17 +210,26 @@ class GithubView extends ConsumerWidget {
             
             const SizedBox(height: 24),
             
-            Text(
-              'TOP REPOSITORIES',
-              style: TextStyle(
-                fontFamily: 'Clash Display',
-                color: Colors.white.withOpacity(0.6),
-                fontWeight: FontWeight.w900,
-                fontSize: 14,
+            if (stats.repos.isNotEmpty) ...[
+              Text(
+                'TOP REPOSITORIES',
+                style: TextStyle(
+                  fontFamily: 'Clash Display',
+                  color: Colors.white.withValues(alpha: 0.6),
+                  fontWeight: FontWeight.w900,
+                  fontSize: 14,
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
-            _RepoCard(name: 'Klyx', stars: 0),
+              const SizedBox(height: 12),
+              ...stats.repos.map((repo) => Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: _RepoCard(
+                  name: repo.name,
+                  stars: repo.stars,
+                  language: repo.language,
+                ),
+              )),
+            ],
             const SizedBox(height: 40),
           ],
         ),
@@ -190,7 +248,7 @@ class _ProfileStat extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 14, color: Colors.black.withOpacity(0.5)),
+        Icon(icon, size: 14, color: Colors.black.withValues(alpha: 0.5)),
         const SizedBox(width: 4),
         Text(
           value,
@@ -198,7 +256,7 @@ class _ProfileStat extends StatelessWidget {
             fontFamily: 'Clash Display',
             fontSize: 12,
             fontWeight: FontWeight.w900,
-            color: Colors.black.withOpacity(0.8),
+            color: Colors.black.withValues(alpha: 0.8),
           ),
         ),
       ],
@@ -246,7 +304,7 @@ class _MiniStatCard extends StatelessWidget {
               fontFamily: 'Clash Display',
               fontSize: 8,
               fontWeight: FontWeight.w900,
-              color: Colors.white.withOpacity(0.4),
+              color: Colors.white.withValues(alpha: 0.4),
             ),
           ),
         ],
@@ -258,8 +316,9 @@ class _MiniStatCard extends StatelessWidget {
 class _RepoCard extends StatelessWidget {
   final String name;
   final int stars;
+  final String? language;
 
-  const _RepoCard({required this.name, required this.stars});
+  const _RepoCard({required this.name, required this.stars, this.language});
 
   @override
   Widget build(BuildContext context) {
@@ -267,31 +326,52 @@ class _RepoCard extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
+          Expanded(
+            child: Row(
+              children: [
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Icons.code, size: 16, color: Colors.white),
                 ),
-                child: const Icon(Icons.code, size: 16, color: Colors.white),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                name,
-                style: const TextStyle(
-                  fontFamily: 'Clash Display',
-                  fontWeight: FontWeight.w900,
-                  fontSize: 14,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        style: const TextStyle(
+                          fontFamily: 'Clash Display',
+                          fontWeight: FontWeight.w900,
+                          fontSize: 14,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      if (language != null)
+                        Text(
+                          language!,
+                          style: TextStyle(
+                            fontFamily: 'Clash Display',
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white.withValues(alpha: 0.4),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           Row(
             children: [
-              Text('$stars', style: TextStyle(fontFamily: 'Clash Display', fontSize: 12, color: Colors.white.withOpacity(0.6))),
+              Text('$stars', style: TextStyle(fontFamily: 'Clash Display', fontSize: 12, color: Colors.white.withValues(alpha: 0.6))),
               const SizedBox(width: 4),
               const Icon(Icons.star, size: 14, color: Colors.amber),
             ],

@@ -26,7 +26,7 @@ class FriendsScreen extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 KlyxCard(
-                  color: KlyxColors.accentRed.withOpacity(0.15),
+                  color: KlyxColors.accentRed.withValues(alpha: 0.15),
                   child: Column(
                     children: [
                       const Icon(Icons.error_outline,
@@ -36,7 +36,7 @@ class FriendsScreen extends ConsumerWidget {
                         'Failed to load friends',
                         style: TextStyle(
                           fontFamily: 'Clash Display',
-                          color: Colors.white.withOpacity(0.7),
+                          color: Colors.white.withValues(alpha: 0.7),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -88,7 +88,7 @@ class _FriendsBody extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.people_outline,
-                size: 64, color: Colors.white.withOpacity(0.15)),
+                size: 64, color: Colors.white.withValues(alpha: 0.15)),
             const SizedBox(height: 16),
             Text(
               'No friends yet',
@@ -96,7 +96,7 @@ class _FriendsBody extends ConsumerWidget {
                 fontFamily: 'Clash Display',
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.white.withOpacity(0.4),
+                color: Colors.white.withValues(alpha: 0.4),
               ),
             ),
             const SizedBox(height: 4),
@@ -105,7 +105,7 @@ class _FriendsBody extends ConsumerWidget {
               style: TextStyle(
                 fontFamily: 'Clash Display',
                 fontSize: 12,
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
               ),
             ),
           ],
@@ -165,7 +165,7 @@ class _FriendCard extends ConsumerWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.08),
+              color: Colors.white.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
@@ -223,7 +223,7 @@ class _FriendCard extends ConsumerWidget {
                 color: Colors.white24,
               ),
             ),
-            error: (_, __) => const Text(
+            error: (_, _) => const Text(
               '--',
               style: TextStyle(
                 fontFamily: 'Clash Display',
@@ -259,7 +259,7 @@ class _PlatformPill extends StatelessWidget {
       margin: const EdgeInsets.only(right: 6),
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(

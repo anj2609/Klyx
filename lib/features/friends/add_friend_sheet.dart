@@ -94,7 +94,7 @@ class _AddFriendSheetState extends ConsumerState<AddFriendSheet> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.15),
+                  color: Colors.white.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -218,7 +218,7 @@ class _SheetField extends StatelessWidget {
       decoration: BoxDecoration(
         color: KlyxColors.background,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Row(
         children: [
@@ -234,7 +234,7 @@ class _SheetField extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          Icon(icon, color: accentColor.withOpacity(0.7), size: 18),
+          Icon(icon, color: accentColor.withValues(alpha: 0.7), size: 18),
           const SizedBox(width: 10),
           Expanded(
             child: TextField(
@@ -250,7 +250,7 @@ class _SheetField extends StatelessWidget {
                 hintText: hint,
                 hintStyle: TextStyle(
                   fontFamily: 'Clash Display',
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   fontWeight: FontWeight.w500,
                   fontSize: 13,
                 ),

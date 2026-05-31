@@ -82,18 +82,34 @@ class WidgetConfig {
         const WidgetConfig(
           id: 'default_gh_streak',
           type: WidgetType.githubStreak,
-          size: WidgetSize.medium,
-          colorAccent: 0xFF4BD37B,
-          showLabel: true,
+          size: WidgetSize.medium, // Full width, half height
+          colorAccent: 0xFFFF3B30,
+          showLabel: false,
           order: 0,
         ),
         const WidgetConfig(
-          id: 'default_lc_solved',
-          type: WidgetType.leetcodeRating,
-          size: WidgetSize.medium,
-          colorAccent: 0xFFF7CE46,
-          showLabel: true,
+          id: 'default_contrib',
+          type: WidgetType.contributionGrid,
+          size: WidgetSize.small, // Half width, half height
+          colorAccent: 0xFF131313,
+          showLabel: false,
           order: 1,
+        ),
+        const WidgetConfig(
+          id: 'default_lc_weekly_small',
+          type: WidgetType.leetcodeRating,
+          size: WidgetSize.small, // Half width, half height
+          colorAccent: 0xFF3B3BFF,
+          showLabel: false,
+          order: 2,
+        ),
+        const WidgetConfig(
+          id: 'default_lc_weekly_wide',
+          type: WidgetType.leetcodeRating,
+          size: WidgetSize.medium, // Full width, half height
+          colorAccent: 0xFF3B3BFF,
+          showLabel: false,
+          order: 3,
         ),
       ];
 }

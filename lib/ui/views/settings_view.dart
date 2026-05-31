@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:klyx/core/theme/colors.dart';
+import 'package:klyx/features/auth/auth_provider.dart';
 import 'package:klyx/ui/widgets/klyx_card.dart';
+import 'package:klyx/ui/views/connect_stack_view.dart';
+import 'package:go_router/go_router.dart';
 
-class SettingsView extends StatefulWidget {
+class SettingsView extends ConsumerStatefulWidget {
   const SettingsView({super.key});
 
   @override
-  State<SettingsView> createState() => _SettingsViewState();
+  ConsumerState<SettingsView> createState() => _SettingsViewState();
 }
 
-class _SettingsViewState extends State<SettingsView> {
+class _SettingsViewState extends ConsumerState<SettingsView> {
   bool _hapticFeedback = true;
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authNotifierProvider);
+    final profile = authState.value;
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -35,30 +42,40 @@ class _SettingsViewState extends State<SettingsView> {
                     _AccountRow(
                       icon: Icons.code,
                       name: 'LeetCode',
-                      username: 'shreyanshu005',
+                      username: profile?.leetcodeId ?? 'Not connected',
                       color: KlyxColors.accentYellow,
+                      isConnected: profile?.hasLeetcode ?? false,
                     ),
                     const Divider(color: Colors.white10),
                     _AccountRow(
                       icon: Icons.terminal,
                       name: 'GitHub',
-                      username: 'shreyanshu005',
+                      username: profile?.githubId ?? 'Not connected',
                       color: KlyxColors.accentGreen,
+                      isConnected: profile?.hasGithub ?? false,
                     ),
                     const Divider(color: Colors.white10),
                     _AccountRow(
                       icon: Icons.emoji_events,
                       name: 'Codeforces',
-                      username: 'ritiktayal18',
+                      username: profile?.codeforcesId ?? 'Not connected',
                       color: KlyxColors.accentBlue,
+                      isConnected: profile?.hasCodeforces ?? false,
                     ),
                     const SizedBox(height: 16),
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const ConnectStackView(),
+                            ),
+                          );
+                        },
                         style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: Colors.white.withOpacity(0.1)),
+                          side: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                         child: Text(
@@ -90,7 +107,7 @@ class _SettingsViewState extends State<SettingsView> {
                     Switch(
                       value: _hapticFeedback,
                       onChanged: (v) => setState(() => _hapticFeedback = v),
-                      activeColor: KlyxColors.accentGreen,
+                      activeThumbColor: KlyxColors.accentGreen,
                     ),
                   ],
                 ),
@@ -131,7 +148,7 @@ class _SettingsViewState extends State<SettingsView> {
                             fontFamily: 'Clash Display',
                             fontWeight: FontWeight.w900,
                             fontSize: 12,
-                            color: Colors.white.withOpacity(0.4),
+                            color: Colors.white.withValues(alpha: 0.4),
                           ),
                         ),
                       ],
@@ -145,7 +162,12 @@ class _SettingsViewState extends State<SettingsView> {
                 width: double.infinity,
                 height: 60,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    await ref.read(authNotifierProvider.notifier).logout();
+                    if (context.mounted) {
+                      context.go('/login');
+                    }
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: KlyxColors.accentRed,
                     foregroundColor: Colors.white,
@@ -184,7 +206,7 @@ class _SettingsLabel extends StatelessWidget {
         fontFamily: 'Clash Display',
         fontSize: 10,
         fontWeight: FontWeight.bold,
-        color: Colors.white.withOpacity(0.4),
+        color: Colors.white.withValues(alpha: 0.4),
       ),
     );
   }
@@ -195,12 +217,14 @@ class _AccountRow extends StatelessWidget {
   final String name;
   final String username;
   final Color color;
+  final bool isConnected;
 
   const _AccountRow({
     required this.icon,
     required this.name,
     required this.username,
     required this.color,
+    this.isConnected = true,
   });
 
   @override
@@ -216,13 +240,25 @@ class _AccountRow extends StatelessWidget {
             style: const TextStyle(fontFamily: 'Clash Display', fontWeight: FontWeight.bold, fontSize: 12),
           ),
           const Spacer(),
+          if (isConnected)
+            Container(
+              width: 8,
+              height: 8,
+              margin: const EdgeInsets.only(right: 8),
+              decoration: BoxDecoration(
+                color: KlyxColors.accentGreen,
+                shape: BoxShape.circle,
+              ),
+            ),
           Text(
             username,
             style: TextStyle(
               fontFamily: 'Clash Display',
               fontWeight: FontWeight.w900,
               fontSize: 12,
-              color: Colors.white.withOpacity(0.6),
+              color: isConnected
+                  ? Colors.white.withValues(alpha: 0.6)
+                  : Colors.white.withValues(alpha: 0.25),
             ),
           ),
         ],

@@ -5,6 +5,7 @@ import 'package:klyx/features/friends/friend_model.dart';
 import 'package:klyx/features/friends/friend_stats_model.dart';
 import 'package:klyx/features/friends/friends_provider.dart';
 import 'package:klyx/viewmodels/dashboard_viewmodel.dart';
+import 'package:klyx/models/dashboard_stats.dart';
 import 'package:klyx/ui/widgets/klyx_card.dart';
 
 class FriendDetailScreen extends ConsumerWidget {
@@ -45,7 +46,7 @@ class FriendDetailScreen extends ConsumerWidget {
           ),
           error: (err, _) => Center(
             child: KlyxCard(
-              color: KlyxColors.accentRed.withOpacity(0.15),
+              color: KlyxColors.accentRed.withValues(alpha: 0.15),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -103,7 +104,7 @@ class _DetailBody extends ConsumerWidget {
                   fontFamily: 'Clash Display',
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white.withOpacity(0.7),
+                  color: Colors.white.withValues(alpha: 0.7),
                 ),
               ),
               const SizedBox(height: 8),
@@ -111,7 +112,7 @@ class _DetailBody extends ConsumerWidget {
                 tween: IntTween(begin: 0, end: stats.totalScore),
                 duration: const Duration(milliseconds: 1200),
                 curve: Curves.easeOutCubic,
-                builder: (_, val, __) => Text(
+                builder: (_, val, _) => Text(
                   '$val',
                   style: const TextStyle(
                     fontFamily: 'Clash Display',
@@ -269,7 +270,7 @@ class _DetailBody extends ConsumerWidget {
   }
 
   void _showComparison(BuildContext context, WidgetRef ref) {
-    final myStats = ref.read(dashboardViewModelProvider);
+    final myStats = ref.read(dashboardViewModelProvider).value ?? DashboardStats.empty();
 
     showModalBottomSheet(
       context: context,
@@ -288,7 +289,7 @@ class _DetailBody extends ConsumerWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
+                color: Colors.white.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -319,7 +320,7 @@ class _DetailBody extends ConsumerWidget {
                 Container(
                   width: 1,
                   height: 120,
-                  color: Colors.white.withOpacity(0.1),
+                  color: Colors.white.withValues(alpha: 0.1),
                 ),
                 Expanded(
                   child: _CompareColumn(
@@ -390,7 +391,7 @@ class _MiniStat extends StatelessWidget {
               fontFamily: 'Clash Display',
               fontSize: 8,
               fontWeight: FontWeight.w900,
-              color: Colors.white.withOpacity(0.4),
+              color: Colors.white.withValues(alpha: 0.4),
             ),
           ),
         ],
@@ -422,7 +423,7 @@ class _CompareColumn extends StatelessWidget {
             fontFamily: 'Clash Display',
             fontSize: 10,
             fontWeight: FontWeight.w900,
-            color: Colors.white.withOpacity(0.5),
+            color: Colors.white.withValues(alpha: 0.5),
             letterSpacing: 1,
           ),
           maxLines: 1,
@@ -464,7 +465,7 @@ class _CompareRow extends StatelessWidget {
               fontFamily: 'Clash Display',
               fontSize: 8,
               fontWeight: FontWeight.w600,
-              color: Colors.white.withOpacity(0.3),
+              color: Colors.white.withValues(alpha: 0.3),
             ),
           ),
         ],

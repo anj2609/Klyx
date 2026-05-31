@@ -16,6 +16,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     with SingleTickerProviderStateMixin {
   final _leetcodeCtrl = TextEditingController();
   final _githubCtrl = TextEditingController();
+  final _githubTokenCtrl = TextEditingController();
   final _codeforcesCtrl = TextEditingController();
   String? _errorText;
   bool _isLoading = false;
@@ -37,6 +38,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   void dispose() {
     _leetcodeCtrl.dispose();
     _githubCtrl.dispose();
+    _githubTokenCtrl.dispose();
     _codeforcesCtrl.dispose();
     _fadeController.dispose();
     super.dispose();
@@ -45,6 +47,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   Future<void> _handleConnect() async {
     final lc = _leetcodeCtrl.text.trim();
     final gh = _githubCtrl.text.trim();
+    final ght = _githubTokenCtrl.text.trim();
     final cf = _codeforcesCtrl.text.trim();
 
     if (lc.isEmpty && gh.isEmpty && cf.isEmpty) {
@@ -60,6 +63,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     final profile = UserProfile(
       leetcodeId: lc.isEmpty ? null : lc,
       githubId: gh.isEmpty ? null : gh,
+      githubToken: ght.isEmpty ? null : ght,
       codeforcesId: cf.isEmpty ? null : cf,
     );
 
@@ -69,11 +73,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
       setState(() => _isLoading = false);
       context.go('/');
     }
-  }
-
-  Future<void> _handleSkip() async {
-    await ref.read(authNotifierProvider.notifier).skipLogin();
-    if (mounted) context.go('/');
   }
 
   @override
@@ -88,109 +87,117 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 48),
+                const SizedBox(height: 24),
 
-                // Logo / Wordmark
-                Center(
-                  child: Column(
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.asset(
+                    'assets/logo.jpg',
+                    width: 72,
+                    height: 72,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                RichText(
+                  text: const TextSpan(
+                    style: TextStyle(
+                      fontFamily: 'Clash Display',
+                      fontSize: 44,
+                      fontWeight: FontWeight.w900,
+                      height: 1.1,
+                      letterSpacing: 1.2,
+                    ),
                     children: [
-                      const Text(
-                        'KLYX',
-                        style: TextStyle(
-                          fontFamily: 'Clash Display',
-                          fontSize: 64,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          letterSpacing: 8,
-                          height: 1,
-                        ),
+                      TextSpan(
+                        text: 'CONNECT\n',
+                        style: TextStyle(color: Colors.white),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'COMPETITIVE CODING DASHBOARD',
-                        style: TextStyle(
-                          fontFamily: 'Clash Display',
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white.withOpacity(0.4),
-                          letterSpacing: 3,
-                        ),
+                      TextSpan(
+                        text: 'YOUR STACK',
+                        style: TextStyle(color: KlyxColors.accentYellow),
                       ),
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 56),
+                const SizedBox(height: 48),
 
-                // Section title
+                const _SectionTitle(title: 'LEETCODE'),
+                const SizedBox(height: 16),
+                _PlatformField(
+                  controller: _leetcodeCtrl,
+                  hintText: 'Username',
+                  icon: Icons.person,
+                  onChanged: (_) => setState(() => _errorText = null),
+                ),
+
+                const SizedBox(height: 32),
+
+                const _SectionTitle(title: 'GITHUB'),
+                const SizedBox(height: 16),
+                _PlatformField(
+                  controller: _githubCtrl,
+                  hintText: 'Username',
+                  icon: Icons.person,
+                  onChanged: (_) => setState(() => _errorText = null),
+                ),
+                const SizedBox(height: 16),
+                _PlatformField(
+                  controller: _githubTokenCtrl,
+                  hintText: 'Personal Access Token',
+                  icon: Icons.vpn_key,
+                  obscureText: true,
+                  onChanged: (_) => setState(() => _errorText = null),
+                ),
+                const SizedBox(height: 12),
                 Text(
-                  'CONNECT YOUR PLATFORMS',
+                  'Required for contribution data. Create at GitHub -> Settings -> Developer Settings -> Tokens.',
                   style: TextStyle(
                     fontFamily: 'Clash Display',
-                    fontSize: 12,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white.withOpacity(0.5),
-                    letterSpacing: 1.5,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0x80FFFFFF),
+                    height: 1.4,
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 32),
 
-                // LeetCode field
-                _PlatformField(
-                  controller: _leetcodeCtrl,
-                  hintText: 'LeetCode Username',
-                  icon: Icons.code,
-                  accentColor: KlyxColors.accentYellow,
-                  onChanged: (_) => setState(() => _errorText = null),
-                ),
-
+                const _SectionTitle(title: 'CODEFORCES'),
                 const SizedBox(height: 16),
-
-                // GitHub field
-                _PlatformField(
-                  controller: _githubCtrl,
-                  hintText: 'GitHub Username',
-                  icon: Icons.terminal,
-                  accentColor: KlyxColors.accentGreen,
-                  onChanged: (_) => setState(() => _errorText = null),
-                ),
-
-                const SizedBox(height: 16),
-
-                // Codeforces field
                 _PlatformField(
                   controller: _codeforcesCtrl,
-                  hintText: 'Codeforces Handle',
-                  icon: Icons.emoji_events_outlined,
-                  accentColor: KlyxColors.accentBlue,
+                  hintText: 'Handle',
+                  icon: Icons.person,
                   onChanged: (_) => setState(() => _errorText = null),
                 ),
 
-                // Inline error
                 if (_errorText != null) ...[
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 24),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 10),
+                        horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
-                      color: KlyxColors.accentRed.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
+                      color: const Color(0x1AEB4335),
+                      borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                          color: KlyxColors.accentRed.withOpacity(0.3)),
+                          color: const Color(0x4DEB4335)),
                     ),
                     child: Row(
                       children: [
                         const Icon(Icons.error_outline,
-                            color: KlyxColors.accentRed, size: 16),
-                        const SizedBox(width: 8),
+                            color: KlyxColors.accentRed, size: 20),
+                        const SizedBox(width: 12),
                         Expanded(
                           child: Text(
                             _errorText!,
                             style: const TextStyle(
                               fontFamily: 'Clash Display',
                               color: KlyxColors.accentRed,
-                              fontSize: 12,
+                              fontSize: 13,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -200,58 +207,39 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                   ),
                 ],
 
-                const SizedBox(height: 40),
+                const SizedBox(height: 48),
 
-                // Connect CTA
                 SizedBox(
                   width: double.infinity,
-                  height: 56,
+                  height: 64,
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _handleConnect,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
+                      backgroundColor: KlyxColors.accentYellow,
                       foregroundColor: Colors.black,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(20),
                       ),
                       elevation: 0,
                     ),
                     child: _isLoading
                         ? const SizedBox(
-                            width: 20,
-                            height: 20,
+                            width: 24,
+                            height: 24,
                             child: CircularProgressIndicator(
-                              strokeWidth: 2,
+                              strokeWidth: 3,
                               color: Colors.black,
                             ),
                           )
                         : const Text(
-                            'CONNECT & START',
+                            'INITIALIZE PROFILE',
                             style: TextStyle(
                               fontFamily: 'Clash Display',
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w900,
                               fontSize: 16,
-                              letterSpacing: 1,
+                              letterSpacing: 1.2,
                             ),
                           ),
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
-                // Skip
-                Center(
-                  child: TextButton(
-                    onPressed: _isLoading ? null : _handleSkip,
-                    child: Text(
-                      'Skip for now',
-                      style: TextStyle(
-                        fontFamily: 'Clash Display',
-                        color: Colors.white.withOpacity(0.3),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
                   ),
                 ),
 
@@ -265,18 +253,37 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   }
 }
 
+class _SectionTitle extends StatelessWidget {
+  final String title;
+  const _SectionTitle({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title,
+      style: TextStyle(
+        fontFamily: 'Clash Display',
+        fontSize: 13,
+        fontWeight: FontWeight.w900,
+        color: const Color(0xB2FFFFFF),
+        letterSpacing: 1.5,
+      ),
+    );
+  }
+}
+
 class _PlatformField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
   final IconData icon;
-  final Color accentColor;
+  final bool obscureText;
   final ValueChanged<String>? onChanged;
 
   const _PlatformField({
     required this.controller,
     required this.hintText,
     required this.icon,
-    required this.accentColor,
+    this.obscureText = false,
     this.onChanged,
   });
 
@@ -285,50 +292,33 @@ class _PlatformField extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: KlyxColors.cardBackground,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Row(
-        children: [
-          // Colored left accent bar
-          Container(
-            width: 4,
-            height: 52,
-            decoration: BoxDecoration(
-              color: accentColor,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12),
-                bottomLeft: Radius.circular(12),
-              ),
-            ),
+      child: TextField(
+        controller: controller,
+        onChanged: onChanged,
+        obscureText: obscureText,
+        style: const TextStyle(
+          fontFamily: 'Clash Display',
+          color: Colors.white,
+          fontWeight: FontWeight.w700,
+          fontSize: 16,
+        ),
+        decoration: InputDecoration(
+          prefixIcon: Padding(
+            padding: const EdgeInsets.only(left: 20, right: 12),
+            child: Icon(icon, color: const Color(0x66FFFFFF), size: 22),
           ),
-          const SizedBox(width: 12),
-          Icon(icon, color: accentColor, size: 20),
-          const SizedBox(width: 12),
-          Expanded(
-            child: TextField(
-              controller: controller,
-              onChanged: onChanged,
-              style: const TextStyle(
-                fontFamily: 'Clash Display',
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-              ),
-              decoration: InputDecoration(
-                hintText: hintText,
-                hintStyle: TextStyle(
-                  fontFamily: 'Clash Display',
-                  color: Colors.white.withOpacity(0.2),
-                  fontWeight: FontWeight.w500,
-                ),
-                border: InputBorder.none,
-                contentPadding:
-                    const EdgeInsets.symmetric(vertical: 16),
-              ),
-            ),
+          prefixIconConstraints: const BoxConstraints(minWidth: 54),
+          hintText: hintText,
+          hintStyle: const TextStyle(
+            fontFamily: 'Clash Display',
+            color: Color(0x4DFFFFFF),
+            fontWeight: FontWeight.w700,
           ),
-        ],
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+        ),
       ),
     );
   }

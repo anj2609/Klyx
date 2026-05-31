@@ -3,11 +3,13 @@ import 'dart:convert';
 class UserProfile {
   final String? leetcodeId;
   final String? githubId;
+  final String? githubToken;
   final String? codeforcesId;
 
   const UserProfile({
     this.leetcodeId,
     this.githubId,
+    this.githubToken,
     this.codeforcesId,
   });
 
@@ -23,12 +25,14 @@ class UserProfile {
   Map<String, dynamic> toJson() => {
         'leetcodeId': leetcodeId,
         'githubId': githubId,
+        'githubToken': githubToken,
         'codeforcesId': codeforcesId,
       };
 
   factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
         leetcodeId: json['leetcodeId'] as String?,
         githubId: json['githubId'] as String?,
+        githubToken: json['githubToken'] as String?,
         codeforcesId: json['codeforcesId'] as String?,
       );
 
@@ -46,11 +50,13 @@ class UserProfile {
   UserProfile copyWith({
     String? leetcodeId,
     String? githubId,
+    String? githubToken,
     String? codeforcesId,
   }) =>
       UserProfile(
         leetcodeId: leetcodeId ?? this.leetcodeId,
         githubId: githubId ?? this.githubId,
+        githubToken: githubToken ?? this.githubToken,
         codeforcesId: codeforcesId ?? this.codeforcesId,
       );
 }

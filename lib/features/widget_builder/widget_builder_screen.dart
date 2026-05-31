@@ -7,6 +7,7 @@ import 'package:klyx/features/widget_builder/widget_renderer.dart';
 import 'package:klyx/features/widget_builder/widget_size.dart';
 import 'package:klyx/features/widget_builder/widget_type.dart';
 import 'package:klyx/viewmodels/dashboard_viewmodel.dart';
+import 'package:klyx/models/dashboard_stats.dart';
 
 class WidgetBuilderScreen extends ConsumerStatefulWidget {
   const WidgetBuilderScreen({super.key});
@@ -20,7 +21,7 @@ class _WidgetBuilderScreenState extends ConsumerState<WidgetBuilderScreen> {
   @override
   Widget build(BuildContext context) {
     final widgets = ref.watch(widgetBuilderProvider);
-    final stats = ref.watch(dashboardViewModelProvider);
+    final stats = ref.watch(dashboardViewModelProvider).value ?? DashboardStats.empty();
 
     return Scaffold(
       backgroundColor: KlyxColors.background,
@@ -61,7 +62,7 @@ class _WidgetBuilderScreenState extends ConsumerState<WidgetBuilderScreen> {
                 fontFamily: 'Clash Display',
                 fontSize: 12,
                 fontWeight: FontWeight.w900,
-                color: KlyxColors.accentRed.withOpacity(0.8),
+                color: KlyxColors.accentRed.withValues(alpha: 0.8),
               ),
             ),
           ),
@@ -78,7 +79,7 @@ class _WidgetBuilderScreenState extends ConsumerState<WidgetBuilderScreen> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.05),
+                  color: Colors.white.withValues(alpha: 0.05),
                   width: 1,
                 ),
               ),
@@ -89,13 +90,13 @@ class _WidgetBuilderScreenState extends ConsumerState<WidgetBuilderScreen> {
                         children: [
                           Icon(Icons.widgets_outlined,
                               size: 40,
-                              color: Colors.white.withOpacity(0.1)),
+                              color: Colors.white.withValues(alpha: 0.1)),
                           const SizedBox(height: 8),
                           Text(
                             'Tap a widget below to add it',
                             style: TextStyle(
                               fontFamily: 'Clash Display',
-                              color: Colors.white.withOpacity(0.2),
+                              color: Colors.white.withValues(alpha: 0.2),
                               fontSize: 13,
                             ),
                           ),
@@ -126,7 +127,7 @@ class _WidgetBuilderScreenState extends ConsumerState<WidgetBuilderScreen> {
               children: [
                 Expanded(
                     child:
-                        Divider(color: Colors.white.withOpacity(0.08))),
+                        Divider(color: Colors.white.withValues(alpha: 0.08))),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: Text(
@@ -135,14 +136,14 @@ class _WidgetBuilderScreenState extends ConsumerState<WidgetBuilderScreen> {
                       fontFamily: 'Clash Display',
                       fontSize: 10,
                       fontWeight: FontWeight.w900,
-                      color: Colors.white.withOpacity(0.3),
+                      color: Colors.white.withValues(alpha: 0.3),
                       letterSpacing: 1,
                     ),
                   ),
                 ),
                 Expanded(
                     child:
-                        Divider(color: Colors.white.withOpacity(0.08))),
+                        Divider(color: Colors.white.withValues(alpha: 0.08))),
               ],
             ),
           ),
@@ -271,7 +272,7 @@ class _WidgetBuilderScreenState extends ConsumerState<WidgetBuilderScreen> {
                 child: _previewTile(config, stats),
               ),
               SizedBox(width: spacing),
-              if (second != null) second,
+              ?second,
               if (second == null) SizedBox(width: halfW),
             ],
           ),
@@ -303,14 +304,14 @@ class _WidgetBuilderScreenState extends ConsumerState<WidgetBuilderScreen> {
       case WidgetType.githubStreak:
       case WidgetType.commitCount:
       case WidgetType.contributionGrid:
-        return KlyxColors.accentGreen.value;
+        return KlyxColors.accentGreen.toARGB32();
       case WidgetType.leetcodeRating:
       case WidgetType.problemsSolved:
-        return KlyxColors.accentYellow.value;
+        return KlyxColors.accentYellow.toARGB32();
       case WidgetType.codeforcesRating:
-        return KlyxColors.accentBlue.value;
+        return KlyxColors.accentBlue.toARGB32();
       case WidgetType.customStat:
-        return KlyxColors.accentRed.value;
+        return KlyxColors.accentRed.toARGB32();
     }
   }
 
@@ -340,7 +341,7 @@ class _WidgetBuilderScreenState extends ConsumerState<WidgetBuilderScreen> {
           'Remove "${config.type.displayName}" from your layout?',
           style: TextStyle(
             fontFamily: 'Clash Display',
-            color: Colors.white.withOpacity(0.6),
+            color: Colors.white.withValues(alpha: 0.6),
           ),
         ),
         actions: [
@@ -350,7 +351,7 @@ class _WidgetBuilderScreenState extends ConsumerState<WidgetBuilderScreen> {
               'Cancel',
               style: TextStyle(
                 fontFamily: 'Clash Display',
-                color: Colors.white.withOpacity(0.4),
+                color: Colors.white.withValues(alpha: 0.4),
               ),
             ),
           ),
@@ -384,9 +385,9 @@ class _PaletteTile extends StatelessWidget {
     return Container(
       width: 85,
       decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.25)),
+        border: Border.all(color: color.withValues(alpha: 0.25)),
       ),
       padding: const EdgeInsets.all(10),
       child: Column(
@@ -396,7 +397,7 @@ class _PaletteTile extends StatelessWidget {
             width: 28,
             height: 28,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
+              color: color.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(Icons.add, color: color, size: 16),
@@ -480,7 +481,7 @@ class _ConfigPanelState extends ConsumerState<_ConfigPanel> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
+                color: Colors.white.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -505,7 +506,7 @@ class _ConfigPanelState extends ConsumerState<_ConfigPanel> {
               fontFamily: 'Clash Display',
               fontSize: 10,
               fontWeight: FontWeight.w900,
-              color: Colors.white.withOpacity(0.4),
+              color: Colors.white.withValues(alpha: 0.4),
             ),
           ),
           const SizedBox(height: 8),
@@ -520,13 +521,13 @@ class _ConfigPanelState extends ConsumerState<_ConfigPanel> {
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? Colors.white.withOpacity(0.1)
+                          ? Colors.white.withValues(alpha: 0.1)
                           : Colors.transparent,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
                         color: isSelected
-                            ? Colors.white.withOpacity(0.3)
-                            : Colors.white.withOpacity(0.08),
+                            ? Colors.white.withValues(alpha: 0.3)
+                            : Colors.white.withValues(alpha: 0.08),
                       ),
                     ),
                     child: Center(
@@ -538,7 +539,7 @@ class _ConfigPanelState extends ConsumerState<_ConfigPanel> {
                           fontWeight: FontWeight.bold,
                           color: isSelected
                               ? Colors.white
-                              : Colors.white.withOpacity(0.4),
+                              : Colors.white.withValues(alpha: 0.4),
                         ),
                       ),
                     ),
@@ -557,7 +558,7 @@ class _ConfigPanelState extends ConsumerState<_ConfigPanel> {
               fontFamily: 'Clash Display',
               fontSize: 10,
               fontWeight: FontWeight.w900,
-              color: Colors.white.withOpacity(0.4),
+              color: Colors.white.withValues(alpha: 0.4),
             ),
           ),
           const SizedBox(height: 8),
@@ -597,13 +598,13 @@ class _ConfigPanelState extends ConsumerState<_ConfigPanel> {
                   fontFamily: 'Clash Display',
                   fontSize: 10,
                   fontWeight: FontWeight.w900,
-                  color: Colors.white.withOpacity(0.4),
+                  color: Colors.white.withValues(alpha: 0.4),
                 ),
               ),
               Switch(
                 value: _showLabel,
                 onChanged: (v) => setState(() => _showLabel = v),
-                activeColor: KlyxColors.accentGreen,
+                activeThumbColor: KlyxColors.accentGreen,
               ),
             ],
           ),

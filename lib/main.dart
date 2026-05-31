@@ -7,6 +7,8 @@ import 'package:klyx/features/auth/login_screen.dart';
 import 'package:klyx/features/widget_builder/widget_builder_screen.dart';
 import 'package:klyx/ui/views/dashboard_view.dart';
 
+import 'package:klyx/services/notification_service.dart';
+
 final _routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authNotifierProvider);
 
@@ -43,7 +45,9 @@ final _routerProvider = Provider<GoRouter>((ref) {
   );
 });
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService().init();
   runApp(
     const ProviderScope(
       child: KlyxApp(),
@@ -65,23 +69,26 @@ class KlyxApp extends ConsumerWidget {
       theme: ThemeData(
         brightness: Brightness.dark,
         scaffoldBackgroundColor: KlyxColors.background,
+        fontFamily: 'Clash Display',
         colorScheme: ColorScheme.dark(
           primary: KlyxColors.accentRed,
           surface: KlyxColors.cardBackground,
         ),
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(fontFamily: 'Clash Display'),
-          bodyMedium: TextStyle(fontFamily: 'Clash Display'),
-          displayLarge: TextStyle(
+        textTheme: ThemeData.dark().textTheme.apply(
+          fontFamily: 'Clash Display',
+        ).copyWith(
+          bodyLarge: const TextStyle(fontFamily: 'Clash Display', fontSize: 18),
+          bodyMedium: const TextStyle(fontFamily: 'Clash Display', fontSize: 16),
+          displayLarge: const TextStyle(
             fontFamily: 'Clash Display',
-            fontSize: 48,
+            fontSize: 56,
             fontWeight: FontWeight.bold,
             letterSpacing: 2.0,
             color: Colors.white,
           ),
-          headlineMedium: TextStyle(
+          headlineMedium: const TextStyle(
             fontFamily: 'Clash Display',
-            fontSize: 32,
+            fontSize: 36,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.5,
             color: Colors.white,

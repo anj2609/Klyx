@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:klyx/features/widget_builder/widget_builder_provider.dart';
 import 'package:klyx/features/widget_builder/widget_renderer.dart';
 import 'package:klyx/viewmodels/dashboard_viewmodel.dart';
+import 'package:klyx/models/dashboard_stats.dart';
 
 class HomeGridView extends ConsumerWidget {
   const HomeGridView({super.key});
@@ -10,7 +11,7 @@ class HomeGridView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final widgets = ref.watch(widgetBuilderProvider);
-    final stats = ref.watch(dashboardViewModelProvider);
+    final statsAsync = ref.watch(dashboardViewModelProvider);
 
     if (widgets.isEmpty) {
       return Padding(
@@ -20,14 +21,14 @@ class HomeGridView extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(Icons.widgets_outlined,
-                  size: 48, color: Colors.white.withOpacity(0.15)),
+                  size: 48, color: Colors.white.withValues(alpha: 0.15)),
               const SizedBox(height: 12),
               Text(
                 'No widgets configured',
                 style: TextStyle(
                   fontFamily: 'Clash Display',
                   fontSize: 14,
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withValues(alpha: 0.3),
                 ),
               ),
               const SizedBox(height: 4),
@@ -36,7 +37,7 @@ class HomeGridView extends ConsumerWidget {
                 style: TextStyle(
                   fontFamily: 'Clash Display',
                   fontSize: 10,
-                  color: Colors.white.withOpacity(0.15),
+                  color: Colors.white.withValues(alpha: 0.15),
                 ),
               ),
             ],
@@ -45,6 +46,9 @@ class HomeGridView extends ConsumerWidget {
       );
     }
 
+    // Get stats, using empty stats if still loading or errored
+    final stats = statsAsync.value ?? DashboardStats.empty();
+
     // Build a simple Column-based grid (2 columns) to avoid StaggeredGrid
     // constraint issues inside SingleChildScrollView.
     return LayoutBuilder(
@@ -52,7 +56,7 @@ class HomeGridView extends ConsumerWidget {
         final maxWidth = constraints.maxWidth;
         final spacing = 12.0;
         final halfWidth = (maxWidth - spacing) / 2;
-        final cellHeight = halfWidth * 0.9; // Aspect ratio
+        final cellHeight = halfWidth * 1.15; // Aspect ratio including label
 
         final List<Widget> rows = [];
         int i = 0;
@@ -95,7 +99,7 @@ class HomeGridView extends ConsumerWidget {
                     child: WidgetRenderer(config: config, stats: stats),
                   ),
                   SizedBox(width: spacing),
-                  if (second != null) second,
+                  ?second,
                   if (second == null) SizedBox(width: halfWidth),
                 ],
               ),

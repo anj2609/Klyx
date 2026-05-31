@@ -39,17 +39,17 @@ class ContributionGrid extends StatelessWidget {
   Color _getColorForIntensity(int intensity) {
     switch (intensity) {
       case 0:
-        return Colors.white.withOpacity(0.05);
+        return const Color(0x0DFFFFFF);
       case 1:
-        return KlyxColors.accentGreen.withOpacity(0.2);
+        return const Color(0x334BD37B);
       case 2:
-        return KlyxColors.accentGreen.withOpacity(0.5);
+        return const Color(0x804BD37B);
       case 3:
-        return KlyxColors.accentGreen.withOpacity(0.8);
+        return const Color(0xCC4BD37B);
       case 4:
         return KlyxColors.accentGreen;
       default:
-        return Colors.white.withOpacity(0.05);
+        return const Color(0x0DFFFFFF);
     }
   }
 }
