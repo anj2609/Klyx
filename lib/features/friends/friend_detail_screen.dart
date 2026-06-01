@@ -7,6 +7,7 @@ import 'package:klyx/features/friends/friends_provider.dart';
 import 'package:klyx/viewmodels/dashboard_viewmodel.dart';
 import 'package:klyx/models/dashboard_stats.dart';
 import 'package:klyx/ui/widgets/klyx_card.dart';
+import 'package:intl/intl.dart';
 
 class FriendDetailScreen extends ConsumerWidget {
   final Friend friend;
@@ -33,6 +34,12 @@ class FriendDetailScreen extends ConsumerWidget {
             letterSpacing: 1,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete_outline, color: KlyxColors.accentRed),
+            onPressed: () => _confirmRemove(context, ref),
+          ),
+        ],
       ),
       body: RefreshIndicator(
         onRefresh: () async {
@@ -80,6 +87,61 @@ class FriendDetailScreen extends ConsumerWidget {
       ),
     );
   }
+
+  void _confirmRemove(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: KlyxColors.cardBackground,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          'Remove Friend',
+          style: TextStyle(
+            fontFamily: 'Clash Display',
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        content: Text(
+          'Are you sure you want to remove ${friend.displayName}?',
+          style: TextStyle(
+            fontFamily: 'Clash Display',
+            color: Colors.white.withValues(alpha: 0.7),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(
+              'CANCEL',
+              style: TextStyle(
+                fontFamily: 'Clash Display',
+                fontWeight: FontWeight.bold,
+                color: Colors.white.withValues(alpha: 0.5),
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              ref
+                  .read(friendsNotifierProvider.notifier)
+                  .removeFriend(friend.id);
+              Navigator.pop(ctx);
+              Navigator.pop(context);
+            },
+            child: const Text(
+              'REMOVE',
+              style: TextStyle(
+                fontFamily: 'Clash Display',
+                fontWeight: FontWeight.bold,
+                color: KlyxColors.accentRed,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _DetailBody extends ConsumerWidget {
@@ -89,9 +151,90 @@ class _DetailBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final addedFormatted = DateFormat('dd MMM yyyy').format(friend.addedAt);
+
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
+        // Profile header card
+        KlyxCard(
+          color: KlyxColors.cardBackground,
+          padding: const EdgeInsets.all(20),
+          child: Row(
+            children: [
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: KlyxColors.accentRed.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Center(
+                  child: Text(
+                    friend.displayName.isNotEmpty
+                        ? friend.displayName[0].toUpperCase()
+                        : '?',
+                    style: const TextStyle(
+                      fontFamily: 'Clash Display',
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: KlyxColors.accentRed,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      friend.displayName,
+                      style: const TextStyle(
+                        fontFamily: 'Clash Display',
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Added $addedFormatted',
+                      style: TextStyle(
+                        fontFamily: 'Clash Display',
+                        fontSize: 11,
+                        color: Colors.white.withValues(alpha: 0.35),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        if (friend.hasLeetcode)
+                          _PlatformChip(
+                            label: friend.leetcodeId!,
+                            color: KlyxColors.accentYellow,
+                          ),
+                        if (friend.hasGithub)
+                          _PlatformChip(
+                            label: friend.githubId!,
+                            color: KlyxColors.accentGreen,
+                          ),
+                        if (friend.hasCodeforces)
+                          _PlatformChip(
+                            label: friend.codeforcesId!,
+                            color: KlyxColors.accentBlue,
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 16),
+
         // Total score
         KlyxCard(
           color: KlyxColors.accentRed,
@@ -237,7 +380,7 @@ class _DetailBody extends ConsumerWidget {
           const SizedBox(height: 20),
         ],
 
-        const SizedBox(height: 16),
+        const SizedBox(height: 8),
 
         // Compare button
         SizedBox(
@@ -264,8 +407,89 @@ class _DetailBody extends ConsumerWidget {
           ),
         ),
 
+        const SizedBox(height: 12),
+
+        // Remove button
+        SizedBox(
+          width: double.infinity,
+          height: 52,
+          child: OutlinedButton.icon(
+            onPressed: () => _confirmRemove(context, ref),
+            icon: const Icon(Icons.person_remove, size: 18, color: KlyxColors.accentRed),
+            label: const Text(
+              'REMOVE FRIEND',
+              style: TextStyle(
+                fontFamily: 'Clash Display',
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+                color: KlyxColors.accentRed,
+                letterSpacing: 1,
+              ),
+            ),
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(color: KlyxColors.accentRed.withValues(alpha: 0.3)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+          ),
+        ),
+
         const SizedBox(height: 40),
       ],
+    );
+  }
+
+  void _confirmRemove(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: KlyxColors.cardBackground,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          'Remove Friend',
+          style: TextStyle(
+            fontFamily: 'Clash Display',
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        content: Text(
+          'Are you sure you want to remove ${friend.displayName}?',
+          style: TextStyle(
+            fontFamily: 'Clash Display',
+            color: Colors.white.withValues(alpha: 0.7),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(
+              'CANCEL',
+              style: TextStyle(
+                fontFamily: 'Clash Display',
+                fontWeight: FontWeight.bold,
+                color: Colors.white.withValues(alpha: 0.5),
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              ref.read(friendsNotifierProvider.notifier).removeFriend(friend.id);
+              Navigator.pop(ctx);
+              Navigator.pop(context);
+            },
+            child: const Text(
+              'REMOVE',
+              style: TextStyle(
+                fontFamily: 'Clash Display',
+                fontWeight: FontWeight.bold,
+                color: KlyxColors.accentRed,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -335,6 +559,34 @@ class _DetailBody extends ConsumerWidget {
             const SizedBox(height: 24),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _PlatformChip extends StatelessWidget {
+  final String label;
+  final Color color;
+  const _PlatformChip({required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(right: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontFamily: 'Clash Display',
+          fontSize: 10,
+          fontWeight: FontWeight.w700,
+          color: color,
+        ),
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }
